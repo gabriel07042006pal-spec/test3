@@ -1082,7 +1082,16 @@ img,svg,video,iframe{max-width:100%}
   .hero-visual{min-height:380px!important}.stage{height:355px!important;min-height:355px!important}.laptop{width:84%!important;max-width:84%!important}.phone{min-width:96px!important;max-width:104px!important;top:119px!important}.mock-head{font-size:16px!important;max-width:60%!important}.phone-title{font-size:11px!important}.metric strong{font-size:10px!important}
   .about-points{grid-template-columns:1fr!important}.founders-intro h2,.portfolio-copy h2,.faq-intro h2{font-size:36px!important}.instagram-posts{grid-auto-columns:89%!important}.footer-grid{gap:20px 10px!important}.footer li,.footer a{font-size:12px!important}
 }
-</style></head>
+</style>
+<style id="nizen-visibility-failsafe">
+/* Conteúdo nunca fica invisível se algum JavaScript falhar */
+.reveal{
+  opacity:1 !important;
+  transform:none !important;
+}
+</style>
+
+</head>
 <body>
 <header class="site-header">
 <div class="container header-inner">
@@ -1554,24 +1563,32 @@ img,svg,video,iframe{max-width:100%}
       return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
     };
 
-    document.getElementById("heroWhats").href = phoneLink();
-    document.getElementById("ctaWhats").href = phoneLink();
-    document.getElementById("footerWhats").innerHTML = CONFIG.whatsapp
-      ? `<a href="${phoneLink()}" target="_blank" rel="noopener">Falar no WhatsApp</a>`
-      : `<a href="#formulario">Falar no WhatsApp</a>`;
+    const heroWhatsEl = document.getElementById("heroWhats");
+    const ctaWhatsEl = document.getElementById("ctaWhats");
+    const footerWhatsEl = document.getElementById("footerWhats");
+
+    if (heroWhatsEl) heroWhatsEl.href = phoneLink();
+    if (ctaWhatsEl) ctaWhatsEl.href = phoneLink();
+    if (footerWhatsEl) {
+      footerWhatsEl.innerHTML = CONFIG.whatsapp
+        ? `<a href="${phoneLink()}" target="_blank" rel="noopener">Falar no WhatsApp</a>`
+        : `<a href="#formulario">Falar no WhatsApp</a>`;
+    }
 
     const menuBtn = document.getElementById("menuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
-    menuBtn.addEventListener("click", () => {
-      mobileMenu.classList.toggle("open");
-      document.body.style.overflow = mobileMenu.classList.contains("open") ? "hidden" : "";
-    });
-    mobileMenu.querySelectorAll("a").forEach(a => {
-      a.addEventListener("click", () => {
-        mobileMenu.classList.remove("open");
-        document.body.style.overflow = "";
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("open");
+        document.body.style.overflow = mobileMenu.classList.contains("open") ? "hidden" : "";
       });
-    });
+      mobileMenu.querySelectorAll("a").forEach(a => {
+        a.addEventListener("click", () => {
+          mobileMenu.classList.remove("open");
+          document.body.style.overflow = "";
+        });
+      });
+    }
 
     document.querySelectorAll(".faq-q").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1591,9 +1608,11 @@ img,svg,video,iframe{max-width:100%}
     }, {threshold:.10});
     document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    const yearEl = document.getElementById("year");
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    document.getElementById("leadForm").addEventListener("submit", e => {
+    const leadFormEl = document.getElementById("leadForm");
+    if (leadFormEl) leadFormEl.addEventListener("submit", e => {
       e.preventDefault();
       const nome = document.getElementById("nome").value.trim();
       const empresa = document.getElementById("empresa").value.trim();
@@ -1640,5 +1659,21 @@ img,svg,video,iframe{max-width:100%}
   document.documentElement.style.overscrollBehaviorX='none';
   document.body.style.overscrollBehaviorX='none';
 })();
-</script></body>
+</script>
+<script>
+window.addEventListener('error', function(){
+  document.querySelectorAll('.reveal').forEach(function(el){
+    el.style.opacity='1';
+    el.style.transform='none';
+  });
+});
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.reveal').forEach(function(el){
+    el.style.opacity='1';
+    el.style.transform='none';
+  });
+});
+</script>
+
+</body>
 </html>
